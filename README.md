@@ -1,33 +1,33 @@
 superbox v. 0.1
 ========
 
-Core Data Wrapper for rubymotion.
+##Core Data Wrapper for rubymotion.
 
-Special Credit:
+**Special Credit:**
 I want to give special credit to caramdache: https://github.com/caramdache/games,
 his example on relationships with core data helped me a lot on learning how to create ManagedObjectModels dynamically.
 
 SuperBox is experimental at the moment, I wouldn't recommend using it in a project yet, but feel free to salvage code for your own project or fork and contribute! Everything here is subject to massive changes.  I am using SuperBox for a game I am making for the IPhone and will update it regularly.
 
-Current Features:
+**Current Features:**
 
--Light Migration. SuperBox will automatically migrate your data when your model changes.
--Persisted Dynamic NSManagedObjectModels. You design your class in code instead of using xcode's model tool. SuperBox will persist this model and look for changes when loading.
+- Light Migration. SuperBox will automatically migrate your data when your model changes.
+- Persisted Dynamic NSManagedObjectModels. You design your class in code instead of using xcode's model tool. SuperBox will persist this model and look for changes when loading.
 
-Goals for SuperBox:
+**Goals for SuperBox:**
 
--Allow multiple stores to be open at once. This will be really useful when a heavy migration is needed, when your model has changed so much light migration is not possible.
--Encryption. SuperBox will have an encryption feature, where all of your data for a class is automatically encrypted and decrypted. In the case of my game, I don't want user's to be able to change
-game data easily.
--Lazy Filters. SuperBox will have filters that won't access the disk until you want them to.
+- Allow multiple stores to be open at once. This will be realaly useful when a heavy migration is needed, when your model has changed so much light migration is not possible.
+- Encryption. SuperBox will have an encryption feature, where all of your data for a class is automatically encrypted and decrypted. In the case of my game, I don't want user's to be able to change
+  game data easily.
+- Lazy Filters. SuperBox will have filters that won't access the disk until you want them to.
 
-Get It:
+##Get It:
 
 Download as zip or clone it.
 
-How To Use:
+##How To Use:
 
-Create Model:
+###Create Model:
 
 ```ruby
 class User < SuperObject
@@ -37,7 +37,7 @@ class User < SuperObject
 end
 ```
 
-Create Super Box:
+#Create Super Box:
 
 ```ruby
 #create a super box, including its name, and model classes
@@ -52,12 +52,12 @@ user.password = "rubymotion"
 box.save
 ```
 
-Migration:
+###Migration:
 
 Migration is automatic. If your model changes later, when you create your Super Box, it will automatically detect their is a new version
 It will then attempt to migrate the existing data to a new store and replace the old one.
 
-License:
+###License:
 
 The MIT License (MIT)
 Copyright (c) 2013 Cory Brevik
@@ -67,7 +67,6 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
 
 
 
