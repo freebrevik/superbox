@@ -1,10 +1,10 @@
 # The MIT License (MIT)
 # Copyright (c) 2013 Cory Brevik
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 class SuperModel < NSManagedObjectModel
@@ -50,7 +50,7 @@ class SuperObject < NSManagedObject
   def properties
     return self.entity
   end
-  
+
   def self.entity
     @entity = NSEntityDescription.alloc.init.tap do |e|
       e.name = name
@@ -135,23 +135,34 @@ class SuperBox
   def create(object)
     return object.new(@context)
   end
-  
+
   def all(object)
     return object.all(@context)
   end
-  
+
   def dump
     @schemas.each do |s|
       objects = s.all(@context)
+      puts ""
+      puts "#{s.name}s"
+      if objects.empty? then puts "Empty" end
       objects.each do |o|
-        puts "Name: #{o.properties.name} ID:" + "#{o.objectID}"
+        puts "Name: #{o.properties.name} ID:" + "#{o.objectID.URIRepresentation.absoluteString}"
         o.properties.propertiesByName.each do |key, value|
-          puts "#{key}" + ": #{o.send(key)}"
+          valString = ""
+          val = o.send(key)
+          if val == nil then 
+            valString = "nil"
+          else
+            valString = "#{val}"
+          end
+          puts "#{key}" + ": \"" + valString + "\""
         end
+        puts ""
       end
     end
   end
-  
+
   def self.open(box = "super")
     puts "Opening SuperBox named: #{box}"
     yield self.instance(box)
@@ -173,19 +184,19 @@ class SuperBox
 
     puts "Creating SuperBox named: #{box}, with schemas: #{p}"
     s.schemas = p
-    
+
     need_update = false
-    
+
     #check if model is already exists on disk
     if s.model_exists then
       #check if model is different from the one defined in code
       need_update = s.any_updates?
-      
+
       #load model
       s.model = s.load_model
       puts "Loaded model with entities: #{s.model.entitiesByName}"
     else
-      
+
       #create model and save it to file
       s.model = s.create_model_with_file
       puts "Created model with entities: #{s.model.entitiesByName}"
@@ -194,7 +205,7 @@ class SuperBox
     #create store
     s.create_store
     puts "Need update? #{need_update ? "Yes" : "No"}"
-    
+
     #if update needed, perform migration
     if need_update then
       s.migrate
@@ -236,7 +247,7 @@ class SuperBox
     puts "Migration complete!"
 
     #remove old box
-    self.clear
+    self.delete
 
     puts "Removed old box at #{old_store_url.path}"
 
@@ -253,7 +264,7 @@ class SuperBox
     unless NSKeyedArchiver.archiveRootObject(@model, toFile:File.join(NSHomeDirectory(), 'Documents', @name + ".mod"))
       raise "Failed to save new model."
     end
-    
+
     puts "Saved old model..."
 
     #create new store
@@ -271,6 +282,30 @@ class SuperBox
   end
 
   def clear
+    if @context != nil
+      @context.lock
+      @context.reset
+    end
+    @store.persistentStores.each do |st|
+      unless @store.removePersistentStore(st, error:nil)
+        raise "Can't remove store: #{error_ptr[0].description}"
+      end
+    end
+    if @context != nil
+      @context.unlock
+    end
+    if @store != nil
+      @store = nil
+    end
+    if @context != nil
+      @context = nil
+    end
+    if @model
+      @model = nil
+    end
+  end
+
+  def delete
     if @context != nil
       @context.lock
       @context.reset
