@@ -11,12 +11,18 @@ class AppDelegate
   def application(application, didFinishLaunchingWithOptions:launchOptions)
     
     #create a super box, including its name, and model classes
-    box = SuperBox.holds("super",User)
+    box = SuperBox.holds("superv2",User,Dog)
     
     #create a user object
     user = box.create User
     user.name = "awdogsgo2heaven"
     user.password = "rubymotion"
+    
+    #create new dog object
+    dog = box.create Dog
+    dog.name = "Galileo"
+    
+    user.addDogsObject(dog)
     
     #save box
     box.save
@@ -31,6 +37,9 @@ class AppDelegate
     user.name = "cutekitty"
     user.password = "rubymotion"
     
+
+    
+    
     box.save
     
     #dump all the data
@@ -39,7 +48,7 @@ class AppDelegate
     box.clear
     
     #create same box, with new model and migrate
-    box = SuperBox.holds("super",User,Dog)
+    box = SuperBox.holds("superv2",User,Dog,Cat)
     
     #verify migration worked
     box.dump
@@ -47,6 +56,22 @@ class AppDelegate
     #create new dog object
     dog = box.create Dog
     dog.name = "Galileo"
+    
+    box.save
+    
+    box.dump
+    
+    #open second box
+    other_box = SuperBox.holds("super",User,Dog,Cat)
+    
+    other_dog = other_box.create Dog
+    other_dog.name = "Sundae"
+    
+    other_box.save
+    
+    other_box.dump
+    
+    dog.name = other_dog.name
     
     box.save
     

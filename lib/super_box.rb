@@ -13,7 +13,7 @@ class SuperModel < NSManagedObjectModel
     self.entities = p.map {|c| c.entity}
     self.entities.each do |entity|
       entity.relationshipsByName.values.flatten.each do |property|
-        property.destinationEntity = @entities[property.destinationEntityName]
+        property.destinationEntity = self.entitiesByName[property.destinationEntityName]
         property.inverseRelationship = property.destinationEntity.relationshipsByName[property.inverseRelationshipName]
       end
     end
@@ -42,7 +42,7 @@ class SuperObject < NSManagedObject
     @relationships ||= []
     return nil if property.empty?
 
-    if property[":type"] == "relationship" then @relationships.push(property)
+    if property[:type] == "relationship" then @relationships.push(property)
     else @properties.push(property)
     end
   end
@@ -71,7 +71,7 @@ class SuperObject < NSManagedObject
         property = NSRelationshipDescription.alloc.init
         property.name = rel[:name]
         property.destinationEntityName = rel[:destination]
-        property.inverseRelationshipName = rel[:inverse]
+        property.inverseRelationshipName = rel[:inverse] || ""
         property.optional = rel[:optional] || false
         property.transient = rel[:transient] || false
         property.indexed = rel[:indexed] || false
@@ -114,6 +114,7 @@ class User < SuperObject
   property :name => "name", :type => NSStringAttributeType, :optional => true
   property :name => "created_by", :type => NSStringAttributeType
   property :name => "password", :type => NSStringAttributeType
+  property :name => "dogs", :type => "relationship", :destination => "Dog", :min => 0, :max => NSIntegerMax, :del => NSCascadeDeleteRule
 end
 
 class Dog < SuperObject

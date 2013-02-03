@@ -16,10 +16,10 @@ SuperBox is experimental at the moment, I wouldn't recommend using it in a proje
 
 **Goals for SuperBox:**
 
-- Allow multiple stores to be open at once. This will be realaly useful when a heavy migration is needed, when your model has changed so much light migration is not possible.
+- Allow multiple stores to be open at once. This will be really useful when a heavy migration is needed, when your model has changed so much light migration is not possible. **This feature is already implemented and an example of it is in the app delegate but more testing and helper methods needed**
+- Lazy Filters. SuperBox will have filters that won't access the disk until you want them to.
 - Encryption. SuperBox will have an encryption feature, where all of your data for a class is automatically encrypted and decrypted. In the case of my game, I don't want user's to be able to change
   game data easily.
-- Lazy Filters. SuperBox will have filters that won't access the disk until you want them to.
 
 ##Get It:
 
@@ -37,10 +37,10 @@ class User < SuperObject
 end
 ```
 
-#Create Super Box:
+###Create Super Box:
 
 ```ruby
-#create a super box, including its name, and model classes
+#create a super box, including its name (the name will be used when creating files, must be unique), and model classes
 box = SuperBox.holds("super",User)
 
 #create a user object
@@ -56,6 +56,26 @@ box.save
 
 Migration is automatic. If your model changes later, when you create your Super Box, it will automatically detect their is a new version
 It will then attempt to migrate the existing data to a new store and replace the old one.
+
+###Other APIs:
+
+```ruby
+box.dump 
+```
+Puts the entire db into console. 
+
+```ruby
+box.clear 
+```
+This will reset this box and set everything to nil and remove its store from memory - but not delete it from disk.
+
+```ruby
+box.delete 
+```
+Same as clear but will delete the store from disk also.
+
+
+
 
 ###License:
 
