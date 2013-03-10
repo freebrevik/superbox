@@ -1,4 +1,4 @@
-superbox v. 0.1
+superbox v. 0.2
 ========
 
 ##Core Data Wrapper for rubymotion.
@@ -110,9 +110,10 @@ SuperBox::Core.dump
 Puts the entire db into console. 
 
 ```ruby
-SuperBox::Core.clear 
+SuperBox::Core.heavy_migrate 
 ```
-This will clear/remove everything from your db, empty it
+renames the current sbx store and initializes a new store with the newest model, then yields the old store so migrations
+can be performed
 
 ```ruby
 SuperBox::Core.delete_all
