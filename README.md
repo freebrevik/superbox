@@ -13,11 +13,10 @@ SuperBox is experimental at the moment, I wouldn't recommend using it in a proje
 
 - Light Migration. SuperBox will automatically migrate your data when your model changes.
 - Persisted Dynamic NSManagedObjectModels. You design your class in code instead of using xcode's model tool. SuperBox will persist this model and look for changes when loading.
+- Filters.
 
 **Goals for SuperBox:**
 
-- Allow multiple stores to be open at once. This will be really useful when a heavy migration is needed, when your model has changed so much light migration is not possible. **This feature is already implemented and an example of it is in the app delegate but more testing and helper methods needed**
-- Lazy Filters. SuperBox will have filters that won't access the disk until you want them to.
 - Encryption. SuperBox will have an encryption feature, where all of your data for a class is automatically encrypted and decrypted. In the case of my game, I don't want user's to be able to change
   game data easily.
 
@@ -29,53 +28,96 @@ Download as zip or clone it.
 
 ###Create Model:
 
+Models are created by subclassing SBXManagedObject. If you want the model to be part of your main core data model you must include
+SuperBox::Core to it, otherwise it will be ignored. 
+
 ```ruby
-class User < SuperObject
+class User < SBXManagedObject
+  include SuperBox::Core
+  
   property :name => "name", :type => NSStringAttributeType, :optional => true
   property :name => "created_by", :type => NSStringAttributeType
   property :name => "password", :type => NSStringAttributeType
 end
 ```
 
-###Create Super Box:
+```ruby
+class User < SBXManagedObject
+  include SuperBox::Core
+  
+  string :name
+  string :created_by
+  string :password
+end
+```
+
+###Use it:
 
 ```ruby
-#create a super box, including its name (the name will be used when creating files, must be unique), and model classes
-box = SuperBox.holds("super",User)
 
 #create a user object
-user = box.create User
+user = User.create()
 user.name = "awdogsgo2heaven"
 user.password = "rubymotion"
 
-#save box
-box.save
+#or you can
+
+user = User.create(:name => "awdogsgo2heaven", :password => "rubymotion")
+
+#Saves everything
+SuperBox::Core.save
 ```
+
+###Filters:
+
+You can query/filter your models by accessing them under the namespace SuperBox. Example:
+
+```ruby
+SuperBox::Users.all
+```
+This will return all users
+
+```ruby
+SuperBox::Users.single
+#or
+SuperBox::Users.top(1)
+```
+Returns the first User in the list
+
+```ruby
+SuperBox::Users.order_by(:name => :asc).single
+#or
+SuperBox::Users.order_by(:name => :desc, :password => :desc).top(1)
+```
+Orders a list in asc, or desc by column
+
+```ruby
+SuperBox::Users.count()
+```
+Returns the number of users
+
 
 ###Migration:
 
-Migration is automatic. If your model changes later, when you create your Super Box, it will automatically detect their is a new version
-It will then attempt to migrate the existing data to a new store and replace the old one.
+Light-Migration is automatic. If your model changes later, when you create your Super Box, it will automatically detect their is a new version
+It will then attempt to migrate the existing data to a new store and replace the old one.  
 
 ###Other APIs:
 
 ```ruby
-box.dump 
+SuperBox::Core.dump 
 ```
 Puts the entire db into console. 
 
 ```ruby
-box.clear 
+SuperBox::Core.clear 
 ```
-This will reset this box and set everything to nil and remove its store from memory - but not delete it from disk.
+This will clear/remove everything from your db, empty it
 
 ```ruby
-box.delete 
+SuperBox::Core.delete_all
 ```
-Same as clear but will delete the store from disk also.
-
-
-
+Deletes the model and sqlite file from the disk
 
 ###License:
 
